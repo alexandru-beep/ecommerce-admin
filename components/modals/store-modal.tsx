@@ -2,9 +2,12 @@
 
 import * as z from "zod";
 import axios from "axios";
+import { useState } from "react";
 import { useStoreModal } from "@/hooks/use-store-modal";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Modal } from "@/components/ui/modal";
+import { toast } from "react-hot-toast";
+import { useForm } from "react-hook-form";
+
 import {
   Form,
   FormControl,
@@ -13,11 +16,9 @@ import {
   FormLabel,
   FormMessage,
 } from "../ui/form";
-import { toast } from "react-hot-toast";
-import { useForm } from "react-hook-form";
-import { useState } from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import { Modal } from "@/components/ui/modal";
 
 const formSchema = z.object({
   name: z.string().min(1),
