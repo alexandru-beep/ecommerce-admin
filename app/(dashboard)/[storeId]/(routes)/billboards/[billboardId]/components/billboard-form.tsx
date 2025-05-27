@@ -82,7 +82,7 @@ export const BillboardForm = ({ initialData }: BillboardFormProps) => {
     try {
       setLoading(true);
       await axios.delete(
-        `/api/${params.storeId}/billboards/${params.billoboardId}`
+        `/api/${params.storeId}/billboards/${params.billboardId}`
       );
       router.refresh();
       router.push(`/${params.storeId}/billboards`);
