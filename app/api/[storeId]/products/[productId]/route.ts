@@ -69,6 +69,10 @@ export async function PATCH(
   const { storeId, productId } = await context.params;
   const { userId } = auth();
 
+  if (!userId) {
+    return new NextResponse("Unauthenticated", { status: 403 });
+  }
+
   const body = await req.json();
 
   const {
@@ -81,10 +85,6 @@ export async function PATCH(
     isFeatured,
     isArchived,
   } = body;
-
-  if (!userId) {
-    return new NextResponse("Unauthenticated", { status: 403 });
-  }
 
   if (!name) {
     return new NextResponse("Name is required", { status: 400 });

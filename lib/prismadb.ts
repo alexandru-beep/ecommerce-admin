@@ -11,7 +11,7 @@ const prisma =
   new PrismaClient({
     datasources: {
       db: {
-        url: `${process.env.DATABASE_URL}?statement_cache_mode=describe`, // 👈 disables prepared statements
+        url: `${process.env.DATABASE_URL}?statement_cache_mode=describe`,
       },
     },
   });
