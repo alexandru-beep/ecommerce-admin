@@ -6,10 +6,15 @@ import { formatter } from "@/lib/utils";
 import { ProductsClient } from "./components/client";
 import { ProductColumn } from "./components/columns";
 
-const ProductsPage = async ({ params }: { params: { storeId: string } }) => {
+interface PageProps {
+  params: Promise<{ storeId: string }>;
+}
+
+export default async function ProductsPage({ params }: PageProps) {
+  const { storeId } = await params;
   const products = await prismadb.product.findMany({
     where: {
-      storeId: params.storeId,
+      storeId: storeId,
     },
     include: {
       category: true,
@@ -40,6 +45,4 @@ const ProductsPage = async ({ params }: { params: { storeId: string } }) => {
       </div>
     </div>
   );
-};
-
-export default ProductsPage;
+}

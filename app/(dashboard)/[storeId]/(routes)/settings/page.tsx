@@ -2,11 +2,12 @@ import prismadb from "@/lib/prismadb";
 import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 import { SettingForm } from "./components/setting-form";
+
 interface SettingsPageProps {
-  params: { storeId: string };
+  params: Promise<{ storeId: string }>;
 }
 
-const SettingsPage = async ({ params }: SettingsPageProps) => {
+export default async function SettingsPage({ params }: SettingsPageProps) {
   const { userId } = await auth();
   const { storeId } = await params;
 
@@ -31,6 +32,4 @@ const SettingsPage = async ({ params }: SettingsPageProps) => {
       </div>
     </div>
   );
-};
-
-export default SettingsPage;
+}

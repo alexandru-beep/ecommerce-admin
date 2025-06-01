@@ -4,13 +4,14 @@ import prismadb from "@/lib/prismadb";
 
 export async function POST(
   req: Request,
-  { params }: { params: { storeId: string } }
+  { params }: { params: Promise<{ storeId: string }> }
 ) {
   try {
     const { userId } = auth();
 
-    const body = await req.json();
+    const { storeId } = await params;
 
+    const body = await req.json();
     const { label, imageUrl } = body;
 
     if (!userId) {
@@ -25,26 +26,26 @@ export async function POST(
       return new NextResponse("Image Url is required", { status: 400 });
     }
 
-    if (!params.storeId) {
+    if (!storeId) {
       return new NextResponse("Store id is required", { status: 400 });
     }
 
-    const storByUserId = await prismadb.store.findFirst({
+    const storeByUserId = await prismadb.store.findFirst({
       where: {
-        id: params.storeId,
+        id: storeId,
         userId,
       },
     });
 
-    if (!storByUserId) {
-      return new NextResponse("Unautorized", { status: 405 });
+    if (!storeByUserId) {
+      return new NextResponse("Unauthorized", { status: 405 });
     }
 
     const billboard = await prismadb.billboard.create({
       data: {
         label,
         imageUrl,
-        storeId: params.storeId,
+        storeId,
       },
     });
 
@@ -57,16 +58,18 @@ export async function POST(
 
 export async function GET(
   req: Request,
-  { params }: { params: { storeId: string } }
+  { params }: { params: Promise<{ storeId: string }> }
 ) {
   try {
-    if (!params.storeId) {
+    const { storeId } = await params;
+
+    if (!storeId) {
       return new NextResponse("Store id is required", { status: 400 });
     }
 
     const billboards = await prismadb.billboard.findMany({
       where: {
-        storeId: params.storeId,
+        storeId,
       },
     });
 

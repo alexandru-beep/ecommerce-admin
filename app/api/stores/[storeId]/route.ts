@@ -5,12 +5,11 @@ import prismadb from "@/lib/prismadb";
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { storeId: string } }
+  { params }: { params: Promise<{ storeId: string }> }
 ) {
   try {
     const { userId } = auth();
     const body = await req.json();
-
     const { name } = body;
 
     if (!userId) {
@@ -21,13 +20,15 @@ export async function PATCH(
       return new NextResponse("Name is required", { status: 400 });
     }
 
-    if (!params.storeId) {
+    const resolvedParams = await params;
+
+    if (!resolvedParams.storeId) {
       return new NextResponse("Store id is required", { status: 400 });
     }
 
     const store = await prismadb.store.updateMany({
       where: {
-        id: params.storeId,
+        id: resolvedParams.storeId,
         userId,
       },
       data: {
@@ -44,7 +45,7 @@ export async function PATCH(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { storeId: string } }
+  { params }: { params: Promise<{ storeId: string }> }
 ) {
   try {
     const { userId } = auth();
@@ -53,13 +54,15 @@ export async function DELETE(
       return new NextResponse("Unauthenticated", { status: 403 });
     }
 
-    if (!params.storeId) {
+    const resolvedParams = await params;
+
+    if (!resolvedParams.storeId) {
       return new NextResponse("Store id is required", { status: 400 });
     }
 
     const store = await prismadb.store.deleteMany({
       where: {
-        id: params.storeId,
+        id: resolvedParams.storeId,
         userId,
       },
     });

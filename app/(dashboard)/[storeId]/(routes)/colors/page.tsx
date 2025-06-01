@@ -4,9 +4,14 @@ import prismadb from "@/lib/prismadb";
 import { ColorsClient } from "./components/client";
 import { ColorColumn } from "./components/columns";
 
-const ColorsPage = async ({ params }: { params: { storeId: string } }) => {
+interface PageProps {
+  params: Promise<{ storeId: string }>;
+}
+
+export default async function ColorsPage({ params }: PageProps) {
+  const { storeId } = await params;
   const colors = await prismadb.color.findMany({
-    where: { storeId: params.storeId },
+    where: { storeId: storeId },
     orderBy: {
       createdAt: "desc",
     },
@@ -26,6 +31,4 @@ const ColorsPage = async ({ params }: { params: { storeId: string } }) => {
       </div>
     </div>
   );
-};
-
-export default ColorsPage;
+}

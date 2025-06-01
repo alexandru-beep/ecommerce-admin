@@ -11,14 +11,15 @@ import { getGraphRevenue } from "@/actions/get-graph-revenue";
 import { Overview } from "@/components/overview";
 
 interface DashboardPageProps {
-  params: { storeId: string };
+  params: Promise<{ storeId: string }>;
 }
 
-const DashboardPage = async ({ params }: DashboardPageProps) => {
-  const totalRevenue = await getTotalRevenue(params.storeId);
-  const salesCount = await getSalesCount(params.storeId);
-  const stockCount = await getStockCount(params.storeId);
-  const graphRevenue = await getGraphRevenue(params.storeId);
+export default async function DashboardPage({ params }: DashboardPageProps) {
+  const { storeId } = await params;
+  const totalRevenue = await getTotalRevenue(storeId);
+  const salesCount = await getSalesCount(storeId);
+  const stockCount = await getStockCount(storeId);
+  const graphRevenue = await getGraphRevenue(storeId);
 
   return (
     <div className="flex-col">
@@ -69,6 +70,4 @@ const DashboardPage = async ({ params }: DashboardPageProps) => {
       </div>
     </div>
   );
-};
-
-export default DashboardPage;
+}

@@ -1,15 +1,20 @@
-import { format } from 'date-fns';
+import { format } from "date-fns";
 
-import prismadb from '@/lib/prismadb';
-import { formatter } from '@/lib/utils';
+import prismadb from "@/lib/prismadb";
+import { formatter } from "@/lib/utils";
 
-import { OrderColumn } from './components/columns';
-import { OrderClient } from './components/client';
+import { OrderColumn } from "./components/columns";
+import { OrderClient } from "./components/client";
 
-const OrdersPage = async ({ params }: { params: { storeId: string } }) => {
+interface PageProps {
+  params: Promise<{ storeId: string }>;
+}
+
+export default async function OrdersPage({ params }: PageProps) {
+  const { storeId } = await params;
   const orders = await prismadb.order.findMany({
     where: {
-      storeId: params.storeId,
+      storeId: storeId,
     },
     include: {
       orderItems: {
@@ -19,7 +24,7 @@ const OrdersPage = async ({ params }: { params: { storeId: string } }) => {
       },
     },
     orderBy: {
-      createdAt: 'desc',
+      createdAt: "desc",
     },
   });
 
@@ -29,23 +34,21 @@ const OrdersPage = async ({ params }: { params: { storeId: string } }) => {
     address: item.address,
     products: item.orderItems
       .map((orderItem) => orderItem.product.name)
-      .join(', '),
+      .join(", "),
     totalPrice: formatter.format(
       item.orderItems.reduce((total, item) => {
         return total + Number(item.product.price);
       }, 0)
     ),
     isPaid: item.isPaid,
-    createdAt: format(item.createdAt, 'MMMM do, yyyy'),
+    createdAt: format(item.createdAt, "MMMM do, yyyy"),
   }));
 
   return (
-    <div className='flex-col'>
-      <div className='flex-1 space-y-4 p-8 pt-6'>
+    <div className="flex-col">
+      <div className="flex-1 space-y-4 p-8 pt-6">
         <OrderClient data={formattedOrders} />
       </div>
     </div>
   );
-};
-
-export default OrdersPage;
+}

@@ -4,9 +4,14 @@ import prismadb from "@/lib/prismadb";
 import { CategoryClient } from "./components/client";
 import { CategoryColumn } from "./components/columns";
 
-const CategoriesPage = async ({ params }: { params: { storeId: string } }) => {
+interface PageProps {
+  params: Promise<{ storeId: string }>;
+}
+
+export default async function CategoriesPage({ params }: PageProps) {
+  const { storeId } = await params;
   const categories = await prismadb.category.findMany({
-    where: { storeId: params.storeId },
+    where: { storeId: storeId },
     include: { billboard: true },
     orderBy: {
       createdAt: "desc",
@@ -27,6 +32,4 @@ const CategoriesPage = async ({ params }: { params: { storeId: string } }) => {
       </div>
     </div>
   );
-};
-
-export default CategoriesPage;
+}
