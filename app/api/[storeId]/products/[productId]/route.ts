@@ -1,5 +1,4 @@
 import prismadb from "@/lib/prismadb";
-import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 
 export async function GET(
@@ -31,26 +30,10 @@ export async function DELETE(
   req: Request,
   context: { params: Promise<{ storeId: string; productId: string }> }
 ) {
-  const { storeId, productId } = await context.params;
-  const { userId } = auth();
-
-  if (!userId) {
-    return new NextResponse("Unauthenticated", { status: 403 });
-  }
+  const {productId } = await context.params;
 
   if (!productId) {
     return new NextResponse("Product id is Required", { status: 400 });
-  }
-
-  const storByUserId = await prismadb.store.findFirst({
-    where: {
-      id: storeId,
-      userId,
-    },
-  });
-
-  if (!storByUserId) {
-    return new NextResponse("Unautorized", { status: 405 });
   }
 
   const product = await prismadb.product.delete({
@@ -66,12 +49,8 @@ export async function PATCH(
   req: Request,
   context: { params: Promise<{ productId: string; storeId: string }> }
 ) {
-  const { storeId, productId } = await context.params;
-  const { userId } = auth();
+  const { productId } = await context.params;
 
-  if (!userId) {
-    return new NextResponse("Unauthenticated", { status: 403 });
-  }
 
   const body = await req.json();
 
@@ -112,17 +91,6 @@ export async function PATCH(
 
   if (!productId) {
     return new NextResponse("Product id is required", { status: 400 });
-  }
-
-  const storeByUserId = await prismadb.store.findFirst({
-    where: {
-      id: storeId,
-      userId,
-    },
-  });
-
-  if (!storeByUserId) {
-    return new NextResponse("Unauthorized", { status: 405 });
   }
 
   await prismadb.product.update({
